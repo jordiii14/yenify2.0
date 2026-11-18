@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight-pink">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a060d" />
+  <title>YENIFY 2.0 — Next-Generation Music Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient Artwork & Theme Glow Canvas -->
+  <div class="ambient-backdrop" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <!-- DYNAMIC ISLAND — YENIFY FLOATING MINI PLAYER -->
+  <div id="dynamic-island" class="dynamic-island collapsed hidden" role="region" aria-label="Dynamic Island Mini Player">
+    <div class="di-compact" id="di-compact-trigger" tabindex="0" role="button" aria-expanded="false">
+      <div class="di-art-wrap">
+        <img id="di-art" src="images/default-cover.jpg" alt="Cover" />
+      </div>
+      <div class="di-meta-compact">
+        <span id="di-title-compact" class="di-title">Select a Track</span>
+        <span id="di-artist-compact" class="di-artist">YENIFY Studio</span>
+      </div>
+      <div class="di-mini-eq" id="di-mini-eq" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="di-expanded">
+      <div class="di-exp-top">
+        <img id="di-art-exp" src="images/default-cover.jpg" alt="Album Artwork" />
+        <div class="di-exp-info">
+          <div class="di-badge">YENIFY LIVE</div>
+          <h4 id="di-title-exp">Select a Track</h4>
+          <p id="di-artist-exp">YENIFY Studio</p>
+        </div>
+        <button id="di-collapse-btn" class="icon-btn-sm" title="Collapse Dynamic Island" aria-label="Collapse">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+        </button>
+      </div>
+      <div class="di-progress-row">
+        <span id="di-curr-time">0:00</span>
+        <input type="range" id="di-seek" min="0" max="100" value="0" step="0.1" aria-label="Mini player seek" />
+        <span id="di-dur-time">0:00</span>
+      </div>
+      <div class="di-controls">
+        <button id="di-like-btn" class="icon-btn-sm" title="Like Song" aria-label="Like">♥</button>
+        <button id="di-prev-btn" class="icon-btn" title="Previous" aria-label="Previous">⏮</button>
+        <button id="di-play-btn" class="di-play-circle" title="Play/Pause" aria-label="Play or Pause">▶</button>
+        <button id="di-next-btn" class="icon-btn" title="Next" aria-label="Next">⏭</button>
+        <button id="di-lyrics-jump" class="icon-btn-sm" title="Open Lyrics" aria-label="Open Lyrics">LRC</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP SHELL -->
+  <div class="app-shell">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 36 36" width="32" height="32" aria-hidden="true">
+            <defs>
+              <linearGradient id="yenifyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--accent)" />
+                <stop offset="100%" stop-color="var(--accent-secondary)" />
+              </linearGradient>
+            </defs>
+            <circle cx="18" cy="18" r="16" fill="none" stroke="url(#yenifyGrad)" stroke-width="2.5"/>
+            <path d="M12 11l6 8v7M24 11l-6 8" stroke="url(#yenifyGrad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">YENIFY</span>
+          <span class="brand-tag">2.0 STUDIO</span>
+        </div>
+      </div>
+
+      <nav class="nav-group" aria-label="Main Navigation">
+        <button class="nav-item active" data-view="discover">
+          <span class="nav-icon">◈</span><span>Discover</span>
+        </button>
+        <button class="nav-item" data-view="now-playing">
+          <span class="nav-icon">◉</span><span>Now Playing</span>
+        </button>
+        <button class="nav-item" data-view="lyrics">
+          <span class="nav-icon">❝</span><span>Lyrics Studio</span>
+        </button>
+        <button class="nav-item" data-view="mixer">
+          <span class="nav-icon">🎚</span><span>Audio Mixer & EQ</span>
+        </button>
+        <button class="nav-item" data-view="library">
+          <span class="nav-icon">♫</span><span>Library & Stats</span>
+        </button>
+        <button class="nav-item" data-view="themes">
+          <span class="nav-icon">◐</span><span>Themes</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-playlists">
+        <div class="section-header-row">
+          <span>PLAYLISTS</span>
+          <button id="create-playlist-btn" class="pill-btn-xs" title="Create New Playlist">+ New</button>
+        </div>
+        <ul id="sidebar-playlist-list" class="playlist-nav-list"></ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="shortcuts-hint">
+          <span>Space: Play</span> • <span>L: Lyrics</span> • <span>M: Mixer</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WORKSPACE -->
+    <main class="workspace">
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input type="search" id="global-search" placeholder="Search tracks, artists, albums, moods..." autocomplete="off" />
+          <select id="search-filter" aria-label="Filter library">
+            <option value="all">All</option>
+            <option value="liked">Liked</option>
+            <option value="recent">Recently Played</option>
+            <option value="most-played">Most Played</option>
+          </select>
+          <div id="search-suggestions" class="search-suggestions hidden"></div>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="upload-lrc-trigger" class="glass-btn" title="Load .lrc or JSON timestamped lyrics file">
+            <span>+ Load .LRC</span>
+          </button>
+          <input type="file" id="lrc-file-input" accept=".lrc,.txt,.json" hidden />
+          <button id="island-toggle-btn" class="glass-btn" title="Toggle Dynamic Island Mini Player">
+            <span>Island</span>
+          </button>
+          <button id="quick-theme-btn" class="glass-btn" title="Switch Theme">
+            <span>Theme</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW 1: DISCOVER / HOME -->
+      <section id="view-discover" class="view-section active">
+        <div class="hero-banner glass-card">
+          <div class="hero-copy">
+            <span class="eyebrow">NEXT-GEN SPATIAL WEB AUDIO</span>
+            <h1>Feel Every Frequency.</h1>
+            <p>8-band parametric studio EQ, real-time word-synced lyrics, ambient artwork lighting, and zero-latency queue control.</p>
+            <div class="hero-cta-row">
+              <button id="hero-play-all" class="primary-btn">▶ Play All Tracks</button>
+              <button id="hero-shuffle-all" class="glass-btn">⇄ Smart Shuffle</button>
+            </div>
+          </div>
+          <div class="hero-visualizer-wrap">
+            <canvas id="hero-spectrum" width="320" height="130"></canvas>
+          </div>
+        </div>
+
+        <div class="filter-pills" id="quick-tabs">
+          <button class="chip active" data-filter="all">All Tracks</button>
+          <button class="chip" data-filter="liked">Liked Songs</button>
+          <button class="chip" data-filter="recent">Recently Played</button>
+          <button class="chip" data-filter="most-played">Most Played</button>
+          <button class="chip" data-filter="albums">By Album</button>
+          <button class="chip" data-filter="artists">By Artist</button>
+        </div>
+
+        <div id="grouped-browser" class="grouped-grid hidden"></div>
+
+        <div class="track-table-container glass-card">
+          <div class="table-header-bar">
+            <h2 id="catalog-heading">Featured Catalog</h2>
+            <span id="catalog-count" class="muted-text">0 tracks</span>
+          </div>
+          <div class="track-list" id="track-list"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: IMMERSIVE NOW PLAYING -->
+      <section id="view-now-playing" class="view-section">
+        <div class="np-grid">
+          <div class="np-stage glass-card">
+            <div class="vinyl-assembly" id="vinyl-assembly">
+              <div class="vinyl-disc" id="vinyl-disc">
+                <div class="vinyl-grooves"></div>
+                <img id="np-vinyl-art" src="images/default-cover.jpg" alt="Vinyl Center Label" />
+                <div class="vinyl-spindle"></div>
+              </div>
+              <div class="album-sleeve">
+                <img id="np-cover-art" src="images/default-cover.jpg" alt="Album Cover" />
+              </div>
+            </div>
+
+            <div class="np-track-details">
+              <div class="np-badges">
+                <span class="badge-pill" id="np-album-badge">Album</span>
+                <span class="badge-pill" id="np-bitrate-badge">WebAudio 48kHz</span>
+              </div>
+              <h2 id="np-title">Select a Song</h2>
+              <p id="np-artist" class="np-artist-name">Artist</p>
+
+              <div class="np-action-bar">
+                <button id="np-like-btn" class="glass-btn">♥ Like</button>
+                <button id="np-open-lyrics" class="glass-btn">❝ Lyrics</button>
+                <button id="np-open-mixer" class="glass-btn">🎚 FX Mixer</button>
+                <button id="np-share-btn" class="glass-btn">↗ Share</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- UP NEXT / DRAG-AND-DROP QUEUE -->
+          <div class="np-queue-panel glass-card">
+            <div class="panel-header">
+              <h3>Up Next Queue</h3>
+              <button id="clear-queue-btn" class="pill-btn-xs">Reset Queue</button>
+            </div>
+            <p class="muted-xs">Drag tracks to reorder playback sequence</p>
+            <ul id="queue-list" class="queue-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: REVOLUTIONARY LYRICS STUDIO -->
+      <section id="view-lyrics" class="view-section">
+        <div class="lyrics-studio-layout" id="lyrics-studio-container">
+          <div class="lyrics-topbar">
+            <div class="lyric-modes" role="tablist" aria-label="Lyric Presentation Styles">
+              <button class="mode-btn active" data-lyric-mode="karaoke">Karaoke</button>
+              <button class="mode-btn" data-lyric-mode="floating">Floating</button>
+              <button class="mode-btn" data-lyric-mode="minimal">Minimal</button>
+              <button class="mode-btn" data-lyric-mode="apple">Apple Stage</button>
+              <button class="mode-btn" data-lyric-mode="dynamic">Dynamic</button>
+              <button class="mode-btn" data-lyric-mode="classic">Classic</button>
+            </div>
+            <div class="lyrics-tools">
+              <button id="lyrics-paste-modal-btn" class="pill-btn-xs">+ Paste / Edit LRC</button>
+              <button id="lyrics-settings-toggle" class="pill-btn-xs">⚙ Customize</button>
+              <button id="lyrics-fullscreen-btn" class="pill-btn-xs">⛶ Fullscreen</button>
+            </div>
+          </div>
+
+          <div class="lyrics-main-area">
+            <div id="lyrics-stage" class="lyrics-stage mode-karaoke" aria-live="polite">
+              <div id="lyrics-viewport" class="lyrics-viewport"></div>
+            </div>
+
+            <!-- LIVE LYRICS CUSTOMIZATION PANEL -->
+            <aside id="lyrics-settings-panel" class="lyrics-settings-panel glass-card hidden">
+              <div class="panel-header">
+                <h3>Lyrics Studio Settings</h3>
+                <button id="close-lyrics-settings" class="icon-btn-sm">✕</button>
+              </div>
+
+              <label class="control-row">
+                <span>Font Family</span>
+                <select id="lyr-font-family">
+                  <option value="'Outfit', sans-serif">Outfit (Modern)</option>
+                  <option value="'Inter', sans-serif">Inter (Clean)</option>
+                  <option value="'Playfair Display', serif">Playfair (Editorial)</option>
+                  <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                </select>
+              </label>
+
+              <label class="control-row">
+                <span>Font Size (<b id="lyr-size-val">28</b>px)</span>
+                <input type="range" id="lyr-font-size" min="16" max="48" value="28" />
+              </label>
+
+              <label class="control-row">
+                <span>Font Weight</span>
+                <select id="lyr-font-weight">
+                  <option value="400">Regular (400)</option>
+                  <option value="600">Semi-Bold (600)</option>
+                  <option value="700" selected>Bold (700)</option>
+                  <option value="800">Extra Bold (800)</option>
+                </select>
+              </label>
+
+              <label class="control-row">
+                <span>Text Alignment</span>
+                <select id="lyr-align">
+                  <option value="center" selected>Center</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+
+              <label class="control-row">
+                <span>Lyrics Color</span>
+                <input type="color" id="lyr-text-color" value="#a8a2b8" />
+              </label>
+
+              <label class="control-row">
+                <span>Highlight Color</span>
+                <input type="color" id="lyr-highlight-color" value="#ff2e93" />
+              </label>
+
+              <label class="control-row">
+                <span>Stage Opacity (<b id="lyr-opacity-val">65</b>%)</span>
+                <input type="range" id="lyr-bg-opacity" min="10" max="100" value="65" />
+              </label>
+
+              <label class="control-row">
+                <span>Animation Intensity (<b id="lyr-anim-val">1.0</b>x)</span>
+                <input type="range" id="lyr-anim-intensity" min="0" max="2" step="0.1" value="1" />
+              </label>
+
+              <label class="control-row">
+                <span>Line Spacing (<b id="lyr-spacing-val">1.6</b>)</span>
+                <input type="range" id="lyr-line-spacing" min="1.2" max="2.6" step="0.1" value="1.6" />
+              </label>
+
+              <label class="toggle-row">
+                <span>Word Highlighting</span>
+                <input type="checkbox" id="lyr-word-hl" checked />
+              </label>
+
+              <label class="toggle-row">
+                <span>Auto-Scroll Sync</span>
+                <input type="checkbox" id="lyr-autoscroll" checked />
+              </label>
+
+              <button id="lyr-reset-btn" class="glass-btn full-width">Reset Lyrics Style</button>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: STUDIO AUDIO MIXER & WEB AUDIO API EFFECTS -->
+      <section id="view-mixer" class="view-section">
+        <div class="mixer-header glass-card">
+          <div>
+            <h2>YENIFY Studio DSP Mixer</h2>
+            <p class="muted-text">Real-time Web Audio API processing graph with anti-clipping dynamics limiter</p>
+          </div>
+          <div class="mixer-master-actions">
+            <label class="toggle-pill">
+              <input type="checkbox" id="dsp-bypass-toggle" checked />
+              <span>DSP Engine Active</span>
+            </label>
+            <button id="save-custom-preset-btn" class="glass-btn">Save Custom Preset</button>
+            <button id="reset-mixer-btn" class="glass-btn">Reset All</button>
+          </div>
+        </div>
+
+        <div class="mixer-grid">
+          <!-- EQUALIZER & PRESETS -->
+          <div class="glass-card eq-card">
+            <div class="panel-header">
+              <h3>8-Band Graphic Equalizer</h3>
+              <select id="eq-preset-select" aria-label="EQ Presets">
+                <option value="balanced">Balanced (Flat)</option>
+                <option value="deep-bass">Deep Bass</option>
+                <option value="vocal-boost">Vocal Boost</option>
+                <option value="acoustic">Acoustic</option>
+                <option value="electronic">Electronic</option>
+                <option value="pop">Pop</option>
+                <option value="rock">Rock</option>
+                <option value="jazz">Jazz</option>
+                <option value="custom">Custom Saved</option>
+              </select>
+            </div>
+
+            <div class="eq-sliders-wrap" id="eq-sliders-wrap">
+              <!-- Populated dynamically by JS for 60Hz, 150Hz, 400Hz, 1kHz, 2.4kHz, 6kHz, 12kHz, 16kHz -->
+            </div>
+          </div>
+
+          <!-- SPATIAL, TONE & DYNAMICS RACK -->
+          <div class="glass-card fx-rack-card">
+            <h3>Tone, Spatial & Dynamics</h3>
+            <div class="fx-controls-grid">
+              <label class="fx-knob-box">
+                <span>Bass Boost (<b id="val-bass">0</b> dB)</span>
+                <input type="range" id="fx-bass" min="-12" max="15" step="0.5" value="0" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Treble Air (<b id="val-treble">0</b> dB)</span>
+                <input type="range" id="fx-treble" min="-12" max="15" step="0.5" value="0" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>L/R Balance (<b id="val-balance">0</b>)</span>
+                <input type="range" id="fx-balance" min="-1" max="1" step="0.05" value="0" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Stereo Width (<b id="val-width">100</b>%)</span>
+                <input type="range" id="fx-width" min="0" max="180" step="5" value="100" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Hall Reverb (<b id="val-reverb">0</b>%)</span>
+                <input type="range" id="fx-reverb" min="0" max="85" step="1" value="0" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Studio Echo (<b id="val-echo">0</b>%)</span>
+                <input type="range" id="fx-echo" min="0" max="70" step="1" value="0" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Playback Speed (<b id="val-speed">1.00</b>x)</span>
+                <input type="range" id="fx-speed" min="0.5" max="1.75" step="0.05" value="1" />
+              </label>
+
+              <label class="fx-knob-box">
+                <span>Track Crossfade (<b id="val-crossfade">2</b>s)</span>
+                <input type="range" id="fx-crossfade" min="0" max="10" step="1" value="2" />
+              </label>
+            </div>
+
+            <div class="fx-toggles-row">
+              <label class="toggle-row">
+                <span>Volume Normalization (Smart Limiter)</span>
+                <input type="checkbox" id="fx-normalize" checked />
+              </label>
+              <label class="toggle-row">
+                <span>Smooth Fade-In / Fade-Out</span>
+                <input type="checkbox" id="fx-smooth-fade" checked />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: LIBRARY, PLAYLISTS & LISTENING STATS -->
+      <section id="view-library" class="view-section">
+        <div class="stats-row">
+          <div class="stat-card glass-card">
+            <span class="stat-label">TOTAL PLAYS</span>
+            <strong id="stat-total-plays">0</strong>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-label">LIKED TRACKS</span>
+            <strong id="stat-liked-count">0</strong>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-label">CUSTOM PLAYLISTS</span>
+            <strong id="stat-playlist-count">0</strong>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-label">TOP TRACK</span>
+            <strong id="stat-top-track">—</strong>
+          </div>
+        </div>
+
+        <div class="library-columns">
+          <div class="glass-card">
+            <div class="panel-header">
+              <h3 id="active-playlist-title">Custom Playlists</h3>
+              <button id="lib-new-playlist-btn" class="pill-btn-xs">+ New Playlist</button>
+            </div>
+            <div id="playlist-manager-body"></div>
+          </div>
+
+          <div class="glass-card">
+            <div class="panel-header">
+              <h3>Listening History</h3>
+              <button id="clear-history-btn" class="pill-btn-xs">Clear</button>
+            </div>
+            <ul id="history-list" class="compact-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: 10-THEME GALLERY -->
+      <section id="view-themes" class="view-section">
+        <div class="glass-card">
+          <h2>YENIFY Atmosphere Themes</h2>
+          <p class="muted-text">Every theme transforms surfaces, accents, glows, visualizers, and contrast ratios across the entire app.</p>
+          <div id="theme-gallery-grid" class="theme-gallery-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- BOTTOM MASTER TRANSPORT DOCK -->
+  <footer class="player-dock" role="region" aria-label="Master Playback Controls">
+    <div class="dock-left">
+      <div class="dock-art-box" id="dock-art-trigger" title="Open Now Playing">
+        <img id="dock-cover" src="images/default-cover.jpg" alt="Current Album Art" />
+      </div>
+      <div class="dock-meta">
+        <div class="dock-title-row">
+          <span id="dock-title" class="dock-title">Ready to Play</span>
+          <button id="dock-like-btn" class="icon-btn-xs" title="Like Track" aria-label="Like Track">♡</button>
+        </div>
+        <span id="dock-artist" class="dock-artist">Select a song from Discover</span>
+      </div>
+    </div>
+
+    <div class="dock-center">
+      <div class="transport-buttons">
+        <button id="shuffle-btn" class="ctrl-btn" title="Shuffle: Off" aria-label="Toggle Shuffle">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        </button>
+        <button id="prev-btn" class="ctrl-btn" title="Previous Track" aria-label="Previous">⏮</button>
+        <button id="play-pause-btn" class="play-main-btn" title="Play / Pause" aria-label="Play or Pause">▶</button>
+        <button id="next-btn" class="ctrl-btn" title="Next Track" aria-label="Next">⏭</button>
+        <button id="repeat-btn" class="ctrl-btn" title="Repeat: Off" aria-label="Cycle Repeat Mode">
+          <span id="repeat-icon">🔁</span>
+          <span id="repeat-badge" class="repeat-one-tag hidden">1</span>
+        </button>
+      </div>
+
+      <div class="scrubber-row">
+        <span id="current-time" class="time-code">0:00</span>
+        <div class="progress-wrapper">
+          <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1" aria-label="Playback timeline" />
+        </div>
+        <span id="total-duration" class="time-code">0:00</span>
+      </div>
+    </div>
+
+    <div class="dock-right">
+      <canvas id="dock-mini-visualizer" width="90" height="28" aria-hidden="true"></canvas>
+      <button id="dock-lyrics-btn" class="icon-btn-sm" title="Lyrics Studio">LRC</button>
+      <button id="dock-mixer-btn" class="icon-btn-sm" title="Audio Mixer">EQ</button>
+      <div class="volume-cluster">
+        <button id="mute-btn" class="icon-btn-sm" title="Mute / Unmute" aria-label="Mute">🔊</button>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.85" aria-label="Master Volume" />
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL FOR CUSTOM LRC / WORD-TIMESTAMP INPUT -->
+  <div id="lrc-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="lrc-modal-title">
+    <div class="modal-card glass-card">
+      <div class="panel-header">
+        <h3 id="lrc-modal-title">Load Lyrics (.LRC or Word-Level JSON)</h3>
+        <button id="close-lrc-modal" class="icon-btn-sm">✕</button>
+      </div>
+      <p class="muted-xs">
+        Paste standard <code>[mm:ss.xx] Line text</code> LRC timestamps, enhanced word-level <code>[00:12.10]&lt;00:12.10&gt;Word &lt;00:12.50&gt;here</code>, or plain unsynchronized lyrics for the current track.
+      </p>
+      <textarea id="lrc-textarea" rows="10" placeholder="[00:05.20] Paste your authorized LRC timestamps here..."></textarea>
+      <div class="modal-actions">
+        <button id="save-lrc-text-btn" class="primary-btn">Apply Lyrics to Current Song</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden HTML5 Audio Core -->
+  <audio id="audio-player" preload="metadata" crossorigin="anonymous"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
